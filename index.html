@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Internet Seguro Quest ✨</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&display=swap');
+
+  :root {
+    --pink: #FF6EB4;
+    --pink-light: #FFB3D9;
+    --pink-pale: #FFE0F0;
+    --lavender: #C9A8FF;
+    --lavender-light: #E8D9FF;
+    --mint: #A8F0D9;
+    --peach: #FFD0A8;
+    --sky: #A8DCFF;
+    --yellow: #FFF0A8;
+    --red: #FF6B6B;
+    --green: #6BFFB8;
+    --white: #FFF5FB;
+    --dark: #3D1A5E;
+    --mid: #7B4FA0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--pink-pale);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Pixel background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,110,180,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(201,168,255,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(168,220,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating stars decoration */
+  .stars-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    font-size: 12px;
+    animation: floatStar linear infinite;
+    opacity: 0.5;
+  }
+
+  @keyframes floatStar {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+  }
+
+  /* SCREENS */
+  .screen {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.4s ease;
+  }
+  .screen.hidden { display: none; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* PIXEL PANEL */
+  .pixel-panel {
+    background: var(--white);
+    border: 4px solid var(--dark);
+    box-shadow: 6px 6px 0px var(--dark), inset 0 0 0 2px var(--pink-light);
+    border-radius: 4px;
+    padding: 32px;
+    max-width: 620px;
+    width: 100%;
+    position: relative;
+  }
+
+  .pixel-panel::before {
+    content: '⋆｡°✩';
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: var(--white);
+    padding: 0 8px;
+    font-size: 18px;
+    color: var(--pink);
+  }
+
+  /* TITLE */
+  .game-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 3vw, 20px);
+    color: var(--dark);
+    text-align: center;
+    line-height: 1.8;
+    text-shadow: 3px 3px 0 var(--pink-light), -1px -1px 0 var(--lavender-light);
+    margin-bottom: 8px;
+  }
+
+  .game-subtitle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(8px, 2vw, 11px);
+    color: var(--mid);
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  /* PIXEL CHARACTER */
+  .pixel-char {
+    display: block;
+    margin: 0 auto 20px;
+    image-rendering: pixelated;
+    width: 80px;
+    height: 80px;
+  }
+
+  /* SVG Pixel Characters inline */
+  .char-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 16px 0;
+  }
+
+  /* MODE BUTTONS */
+  .mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 18px 22px;
+    margin: 10px 0;
+    border: 4px solid var(--dark);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(8px, 1.8vw, 11px);
+    font-weight: 700;
+    color: var(--dark);
+    transition: transform 0.1s, box-shadow 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+  .mode-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.2);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .mode-btn:hover { transform: translate(-2px, -2px); }
+  .mode-btn:hover::after { opacity: 1; }
+  .mode-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--dark) !important; }
+
+  .btn-cyber {
+    background: linear-gradient(135deg, #FFB3D9, #FF6EB4);
+    box-shadow: 5px 5px 0px var(--dark);
+  }
+  .btn-protect {
+    background: linear-gradient(135deg, #C9A8FF, #A8DCFF);
+    box-shadow: 5px 5px 0px var(--dark);
+  }
+
+  .mode-icon { font-size: 36px; flex-shrink: 0; }
+  .mode-text { text-align: left; line-height: 1.8; }
+  .mode-text small {
+    display: block;
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-top: 4px;
+    opacity: 0.8;
+  }
+
+  /* HEARTS / LIVES */
+  .lives-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .heart {
+    font-size: 28px;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  .heart.lost {
+    filter: grayscale(1) opacity(0.3);
+    transform: scale(0.8);
+  }
+  @keyframes heartBreak {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.4) rotate(-10deg); }
+    50% { transform: scale(0.8) rotate(10deg); }
+    100% { transform: scale(0.8); filter: grayscale(1) opacity(0.3); }
+  }
+  .heart.breaking { animation: heartBreak 0.5s forwards; }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    background: var(--pink-pale);
+    border: 3px solid var(--dark);
+    border-radius: 4px;
+    height: 18px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--lavender));
+    transition: width 0.5s ease;
+    position: relative;
+  }
+  .progress-bar-fill::after {
+    content: '★';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: var(--yellow);
+    text-shadow: 0 0 4px var(--pink);
+  }
+
+  .level-badge {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    background: var(--lavender);
+    border: 3px solid var(--dark);
+    padding: 4px 10px;
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--dark);
+    box-shadow: 3px 3px 0 var(--dark);
+  }
+
+  /* QUESTION */
+  .question-text {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(9px, 2vw, 12px);
+    color: var(--dark);
+    line-height: 2;
+    text-align: center;
+    margin-bottom: 24px;
+    min-height: 80px;
+  }
+
+  /* ANSWER BUTTONS */
+  .answers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .answer-btn {
+    padding: 14px 12px;
+    border: 4px solid var(--dark);
+    border-radius: 4px;
+    background: var(--white);
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(11px, 2vw, 13px);
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.4;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+    box-shadow: 4px 4px 0 var(--dark);
+    text-align: left;
+    position: relative;
+  }
+  .answer-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--dark);
+    background: var(--pink-pale);
+  }
+  .answer-btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--dark);
+  }
+  .answer-btn:disabled { cursor: default; }
+
+  .answer-btn.correct {
+    background: var(--green) !important;
+    border-color: #00A86B;
+    animation: correctPop 0.5s ease;
+  }
+  .answer-btn.wrong {
+    background: var(--red) !important;
+    border-color: #CC3333;
+    animation: wrongShake 0.5s ease;
+  }
+  .answer-btn.reveal {
+    background: var(--green) !important;
+    border-color: #00A86B;
+  }
+
+  @keyframes correctPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .answer-letter {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: var(--pink);
+    border: 2px solid var(--dark);
+    border-radius: 2px;
+    text-align: center;
+    line-height: 20px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+
+  /* FEEDBACK */
+  .feedback-box {
+    border: 4px solid var(--dark);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: var(--mint); border-color: #00A86B; color: #006640; }
+  .feedback-box.wrong-fb { background: #FFD0D0; border-color: var(--red); color: #8B0000; }
+
+  /* NEXT BUTTON */
+  .next-btn {
+    width: 100%;
+    padding: 16px;
+    margin-top: 12px;
+    border: 4px solid var(--dark);
+    border-radius: 4px;
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+    color: var(--dark);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 var(--dark);
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: none;
+  }
+  .next-btn.show { display: block; }
+  .next-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--dark); }
+  .next-btn:active { transform: translate(2px, 2px); box-shadow: 3px 3px 0 var(--dark); }
+
+  /* SCORE */
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .score-tag {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    background: var(--yellow);
+    border: 3px solid var(--dark);
+    padding: 4px 10px;
+    color: var(--dark);
+    box-shadow: 3px 3px 0 var(--dark);
+  }
+  .mode-tag {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    padding: 4px 10px;
+    border: 3px solid var(--dark);
+    box-shadow: 3px 3px 0 var(--dark);
+  }
+  .mode-tag.cyber { background: var(--pink-light); }
+  .mode-tag.protect { background: var(--lavender-light); }
+
+  /* GAME OVER / WIN */
+  .big-emoji { font-size: 72px; display: block; text-align: center; margin: 12px 0; }
+  .result-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 3vw, 18px);
+    text-align: center;
+    color: var(--dark);
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  .result-sub {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    text-align: center;
+    color: var(--mid);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .final-score {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    text-align: center;
+    background: var(--yellow);
+    border: 4px solid var(--dark);
+    padding: 14px;
+    box-shadow: 5px 5px 0 var(--dark);
+    color: var(--dark);
+    margin-bottom: 20px;
+  }
+  .action-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .action-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 14px;
+    border: 4px solid var(--dark);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--dark);
+    box-shadow: 5px 5px 0 var(--dark);
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .action-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--dark); }
+  .action-btn:active { transform: translate(2px, 2px); box-shadow: 3px 3px 0 var(--dark); }
+  .btn-restart { background: linear-gradient(135deg, var(--mint), var(--sky)); }
+  .btn-menu { background: linear-gradient(135deg, var(--pink-light), var(--lavender-light)); }
+
+  /* LEVEL UP OVERLAY */
+  #levelupOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(61,26,94,0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+  }
+  #levelupOverlay.show { display: flex; }
+  .levelup-box {
+    background: var(--white);
+    border: 6px solid var(--dark);
+    box-shadow: 10px 10px 0 var(--dark);
+    padding: 40px;
+    text-align: center;
+    animation: levelupPop 0.5s cubic-bezier(.36,.07,.19,.97);
+  }
+  @keyframes levelupPop {
+    0% { transform: scale(0.5) rotate(-5deg); }
+    60% { transform: scale(1.1) rotate(2deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  .levelup-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 20px;
+    color: var(--dark);
+    text-shadow: 3px 3px 0 var(--pink);
+    margin-bottom: 8px;
+  }
+  .levelup-stars { font-size: 40px; margin: 12px 0; }
+
+  /* PIXEL ART SVGs */
+  svg.pixel { image-rendering: pixelated; }
+
+  /* Sparkle animation */
+  @keyframes sparkle {
+    0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    50% { opacity: 0.7; transform: scale(1.3) rotate(20deg); }
+  }
+  .sparkle { animation: sparkle 2s ease-in-out infinite; display: inline-block; }
+  .sparkle:nth-child(2) { animation-delay: 0.3s; }
+  .sparkle:nth-child(3) { animation-delay: 0.6s; }
+
+  /* Decorative corners */
+  .deco-corner {
+    position: absolute;
+    font-size: 16px;
+    opacity: 0.6;
+  }
+  .deco-corner.tl { top: 8px; left: 8px; }
+  .deco-corner.tr { top: 8px; right: 8px; }
+  .deco-corner.bl { bottom: 8px; left: 8px; }
+  .deco-corner.br { bottom: 8px; right: 8px; }
+
+  @media (max-width: 480px) {
+    .answers-grid { grid-template-columns: 1fr; }
+    .pixel-panel { padding: 20px 16px; }
+    .mode-btn { flex-direction: column; text-align: center; }
+    .mode-text { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating stars background -->
+<div class="stars-bg" id="starsBg"></div>
+
+<!-- Level up overlay -->
+<div id="levelupOverlay">
+  <div class="levelup-box">
+    <div class="levelup-stars">⭐✨🌟</div>
+    <div class="levelup-title">¡LEVEL UP!</div>
+    <div style="font-family:'Nunito',sans-serif;font-size:15px;color:var(--mid);margin-top:8px;">¡Eres increíble! Sigue así 💖</div>
+  </div>
+</div>
+
+<!-- SCREEN: MENU -->
+<div class="screen" id="screenMenu">
+  <div class="pixel-panel" style="max-width:560px;">
+    <span class="deco-corner tl">💖</span>
+    <span class="deco-corner tr">⭐</span>
+    <span class="deco-corner bl">🌸</span>
+    <span class="deco-corner br">✨</span>
+
+    <!-- Pixel art character (SVG) -->
+    <div style="text-align:center;margin-bottom:16px;">
+      <!-- Cute pixel star character -->
+      <svg width="100" height="90" viewBox="0 0 100 90" class="pixel" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body -->
+        <rect x="35" y="40" width="30" height="28" fill="#FF6EB4"/>
+        <rect x="30" y="44" width="10" height="18" fill="#FF6EB4" rx="2"/>
+        <rect x="60" y="44" width="10" height="18" fill="#FF6EB4" rx="2"/>
+        <!-- Legs -->
+        <rect x="38" y="68" width="10" height="12" fill="#C9A8FF"/>
+        <rect x="52" y="68" width="10" height="12" fill="#C9A8FF"/>
+        <!-- Feet -->
+        <rect x="36" y="78" width="14" height="8" fill="#3D1A5E" rx="2"/>
+        <rect x="50" y="78" width="14" height="8" fill="#3D1A5E" rx="2"/>
+        <!-- Head -->
+        <rect x="32" y="12" width="36" height="32" fill="#FFD0A8" rx="4"/>
+        <!-- Eyes -->
+        <rect x="41" y="22" width="6" height="7" fill="#3D1A5E" rx="1"/>
+        <rect x="53" y="22" width="6" height="7" fill="#3D1A5E" rx="1"/>
+        <!-- Eye shine -->
+        <rect x="43" y="23" width="2" height="2" fill="white"/>
+        <rect x="55" y="23" width="2" height="2" fill="white"/>
+        <!-- Blush -->
+        <rect x="38" y="30" width="8" height="5" fill="#FFB3D9" rx="2" opacity="0.7"/>
+        <rect x="54" y="30" width="8" height="5" fill="#FFB3D9" rx="2" opacity="0.7"/>
+        <!-- Smile -->
+        <rect x="45" y="34" width="10" height="3" fill="#3D1A5E" rx="1"/>
+        <!-- Hair -->
+        <rect x="32" y="8" width="36" height="8" fill="#7B4FA0" rx="2"/>
+        <rect x="28" y="10" width="8" height="14" fill="#7B4FA0" rx="2"/>
+        <rect x="64" y="10" width="8" height="14" fill="#7B4FA0" rx="2"/>
+        <!-- Hair ornament -->
+        <rect x="56" y="4" width="12" height="10" fill="#FF6EB4" rx="2"/>
+        <rect x="59" y="6" width="6" height="6" fill="#FFB3D9" rx="1"/>
+        <!-- Star on shirt -->
+        <text x="44" y="60" font-size="12" fill="#FFE0F0">★</text>
+      </svg>
+    </div>
+
+    <div class="game-title">INTERNET<br>SEGURO<br>QUEST</div>
+    <div class="game-subtitle">✨ ELIGE TU MODO ✨</div>
+
+    <div style="text-align:center;margin-bottom:20px;">
+      <span class="sparkle">🌸</span>
+      <span style="font-family:'Nunito',sans-serif;font-size:13px;color:var(--mid);font-weight:700;"> ¡Aprende y protégete en internet! </span>
+      <span class="sparkle">🌸</span>
+    </div>
+
+    <button class="mode-btn btn-cyber" onclick="startGame('cyber')">
+      <span class="mode-icon">🛡️</span>
+      <span class="mode-text">
+        MODO CYBERBULLYING
+        <small>Aprende a reconocer y detener el acoso en línea</small>
+      </span>
+    </button>
+
+    <button class="mode-btn btn-protect" onclick="startGame('protect')">
+      <span class="mode-icon">🔒</span>
+      <span class="mode-text">
+        MODO PROTECCIÓN
+        <small>Navega seguro y protege tu información</small>
+      </span>
+    </button>
+
+    <div style="text-align:center;margin-top:20px;font-family:'Press Start 2P',monospace;font-size:7px;color:var(--pink);line-height:2;">
+      3 VIDAS ♥ • 10 PREGUNTAS • ¡TÚ PUEDES! ⭐
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: GAME -->
+<div class="screen hidden" id="screenGame">
+  <div class="pixel-panel" style="max-width:640px;">
+    <span class="deco-corner tl">💖</span>
+    <span class="deco-corner tr">⭐</span>
+
+    <!-- TOP BAR -->
+    <div class="score-row">
+      <span class="mode-tag" id="modeTag">MODO</span>
+      <span class="level-badge" id="levelBadge">LVL 1</span>
+      <span class="score-tag">★ <span id="scoreDisplay">0</span></span>
+    </div>
+
+    <!-- LIVES -->
+    <div class="lives-bar" id="livesBar">
+      <span class="heart" id="h1">💗</span>
+      <span class="heart" id="h2">💗</span>
+      <span class="heart" id="h3">💗</span>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+
+    <!-- CHARACTER + QUESTION -->
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;">
+      <div id="charSide" style="flex-shrink:0;margin-top:4px;">
+        <svg width="50" height="60" viewBox="0 0 50 60" class="pixel" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="20" width="20" height="20" fill="#FF6EB4"/>
+          <rect x="10" y="23" width="8" height="12" fill="#FF6EB4" rx="1"/>
+          <rect x="32" y="23" width="8" height="12" fill="#FF6EB4" rx="1"/>
+          <rect x="17" y="40" width="7" height="10" fill="#C9A8FF"/>
+          <rect x="26" y="40" width="7" height="10" fill="#C9A8FF"/>
+          <rect x="15" y="48" width="10" height="6" fill="#3D1A5E" rx="1"/>
+          <rect x="25" y="48" width="10" height="6" fill="#3D1A5E" rx="1"/>
+          <rect x="14" y="6" width="22" height="18" fill="#FFD0A8" rx="3"/>
+          <rect x="20" y="11" width="4" height="5" fill="#3D1A5E" rx="1"/>
+          <rect x="26" y="11" width="4" height="5" fill="#3D1A5E" rx="1"/>
+          <rect x="21" y="12" width="1" height="1" fill="white"/>
+          <rect x="27" y="12" width="1" height="1" fill="white"/>
+          <rect x="14" y="3" width="22" height="6" fill="#7B4FA0" rx="1"/>
+          <rect x="10" y="5" width="6" height="10" fill="#7B4FA0" rx="1"/>
+          <rect x="34" y="5" width="6" height="10" fill="#7B4FA0" rx="1"/>
+          <rect x="19" y="16"
+// Set mode tag
+  const tag = document.getElementById('modeTag');
+  if (mode === 'cyber') {
+    tag.textContent = '🛡️ CYBERBULLYING';
+    tag.className = 'mode-tag cyber';
+  } else {
+    tag.textContent = '🔒 PROTECCIÓN';
+    tag.className = 'mode-tag protect';
+  }
+
+  showScreen('screenGame');
+  renderQuestion();
+}
+
+function restartSameMode() { startGame(state.mode); }
+
+// ===========================
+// RENDER QUESTION
+// ===========================
+function renderQuestion() {
+  state.answered = false;
+  const q = state.questions[state.qIndex];
+  const total = state.questions.length;
+
+  // Update UI
+  document.getElementById('scoreDisplay').textContent = state.score;
+  document.getElementById('levelBadge').textContent = 'LVL ' + state.level;
+  document.getElementById('qCounter').textContent = `PREGUNTA ${state.qIndex + 1}/${total}`;
+
+  // Progress bar
+  const pct = (state.qIndex / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  // Lives
+  updateHearts();
+
+  // Question
+  document.getElementById('questionText').textContent = q.q;
+
+  // Answers
+  const grid = document.getElementById('answersGrid');
+  grid.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = `<span class="answer-letter">${letters[i]}</span>${opt}`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  // Hide feedback & next
+  const fb = document.getElementById('feedbackBox');
+  fb.className = 'feedback-box';
+  fb.textContent = '';
+  document.getElementById('nextBtn').className = 'next-btn';
+}
+
+// ===========================
+// SELECT ANSWER
+// ===========================
+function selectAnswer(idx) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const q = state.questions[state.qIndex];
+  const btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('feedbackBox');
+  const nextBtn = document.getElementById('nextBtn');
+
+  if (idx === q.ans) {
+    // CORRECT
+    btns[idx].classList.add('correct');
+    fb.className = 'feedback-box correct-fb show';
+    fb.textContent = q.fb;
+    state.score += 10 * state.level;
+
+    // Level up check every 3 correct
+    const correctThisLevel = state.qIndex + 1;
+    if (correctThisLevel % 3 === 0 && state.qIndex < state.questions.length - 1) {
+      state.level = Math.min(state.level + 1, 5);
+      setTimeout(showLevelUp, 300);
+    }
+  } else {
+    // WRONG
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    fb.className = 'feedback-box wrong-fb show';
+    fb.textContent = '❌ ' + q.fb;
+
+    // Lose a life
+    state.lives--;
+    const heartId = 'h' + (state.lives + 1);
+    const heartEl = document.getElementById(heartId);
+    if (heartEl) {
+      heartEl.classList.add('breaking');
+      setTimeout(() => heartEl.classList.add('lost'), 500);
+    }
+  }
+
+  // Check game over
+  if (state.lives <= 0) {
+    setTimeout(() => {
+      document.getElementById('goScore').textContent = state.score;
+      showScreen('screenGameOver');
+    }, 1500);
+    return;
+  }
+
+  // Check win
+  if (state.qIndex >= state.questions.length - 1) {
+    setTimeout(() => {
+      document.getElementById('winScore').textContent = state.score;
+      const rankEl = document.getElementById('rankDisplay');
+      let rank;
+      if (state.score >= 90) rank = '🏆 RANGO: HEROÍNA DIGITAL ✨';
+      else if (state.score >= 70) rank = '⭐ RANGO: GUARDIANA DIGITAL';
+      else rank = '💖 RANGO: EXPLORADORA DIGITAL';
+      rankEl.textContent = rank;
+      showScreen('screenWin');
+    }, 1500);
+    return;
+  }
+
+  nextBtn.className = 'next-btn show';
+}
+
+// ===========================
+// NEXT QUESTION
+// ===========================
+function nextQuestion() {
+  state.qIndex++;
+  document.getElementById('progressFill').style.width = ((state.qIndex / state.questions.length) * 100) + '%';
+  renderQuestion();
+}
+
+// ===========================
+// UPDATE HEARTS
+// ===========================
+function updateHearts() {
+  const hearts = ['h1','h2','h3'];
+  hearts.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'heart' + (i >= state.lives ? ' lost' : '');
+    el.textContent = i < state.lives ? '💗' : '🖤';
+  });
+}
+
+// ===========================
+// LEVEL UP
+// ===========================
+function showLevelUp() {
+  const overlay = document.getElementById('levelupOverlay');
+  overlay.classList.add('show');
+  setTimeout(() => { overlay.classList.remove('show'); }, 2000);
+}
+</script>
+</body>
+</html>
